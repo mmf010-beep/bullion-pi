@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wise App - خدمات مالية</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 50px 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 { color: #6200ea; }
+        button {
+            background-color: #6200ea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #3700b3; }
+        .status { margin-top: 20px; font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>تطبيق Wise المالي</h1>
+    <p>مرحباً بك في تطبيق الخدمات المالية المبتكر على شبكة Pi</p>
+    
+    <button id="login-btn" onclick="loginWithPi()">تسجيل الدخول عبر Pi Browser</button>
+    
+    <div class="status" id="user-status">حالة الاتصال: غير متصل</div>
+</div>
+
+<script>
+    // تهيئة مكتبة الـ SDK الخاصة بـ Pi Network
+    const Pi = window.Pi;
+    Pi.init({ version: "2.0", sandbox: true }); // تم تفعيل وضع الـ Sandbox للفحص والتجربة
+
+    async function loginWithPi() {
+        try {
+            document.getElementById('user-status').innerText = "جاري الاتصال بـ Pi Network...";
+            
+            // طلب تسجيل دخول المستخدم وتحديد الصلاحيات المطلوبة (الاسم والمحفظة)
+            const scopes = ['username', 'payments'];
+            
+            function onIncompletePaymentFound(payment) {
+                console.log("هناك عملية دفع معلقة:", payment);
+            };
+
+            const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+            
+            // إظهار بيانات المستخدم بعد نجاح تسجيل الدخول
+            document.getElementById('user-status').innerText = `مرحباً بك: ${auth.user.username}`;
+            document.getElementById('login-btn').style.display = 'none';
+            
+            console.log("تم التوثيق بنجاح للمستخدم:", auth.user.username);
+        } catch (error) {
+            console.error(error);
+            document.getElementById('user-status').innerText = "فشل تسجيل الدخول. يرجى الدخول من متصفح Pi Browser.";
+        }
+    }
+</script>
+
+</body>
+</html>
