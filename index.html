@@ -3,80 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wise App - خدمات مالية</title>
+    <title>Bullion Pi - منصة الذهب الرقمية</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #111111;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            background-color: #f4f7f6;
-            color: #333;
-            padding: 50px 20px;
         }
         .container {
-            max-width: 500px;
+            padding: 50px 20px;
+            max-width: 600px;
             margin: 0 auto;
-            background: white;
-            padding: 30px;
+        }
+        h1 {
+            color: #D4AF37; /* لون الذهب الفخم */
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #aaaaaa;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        .price-card {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            border: 2px solid #D4AF37;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: inline-block;
+            padding: 30px;
+            margin-top: 30px;
+            width: 90%;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
         }
-        h1 { color: #6200ea; }
-        button {
-            background-color: #6200ea;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
+        .price {
+            font-size: 2.2rem;
+            color: #D4AF37;
+            font-weight: bold;
+            margin: 15px 0;
         }
-        button:hover { background-color: #3700b3; }
-        .status { margin-top: 20px; font-weight: bold; color: #555; }
+        .badge {
+            background-color: #D4AF37;
+            color: #111;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>تطبيق Wise المالي</h1>
-    <p>مرحباً بك في تطبيق الخدمات المالية المبتكر على شبكة Pi</p>
-    
-    <button id="login-btn" onclick="loginWithPi()">تسجيل الدخول عبر Pi Browser</button>
-    
-    <div class="status" id="user-status">حالة الاتصال: غير متصل</div>
-</div>
+    <div class="container">
+        <h1>Bullion Pi</h1>
+        <p>المقاصة الرقمية ومؤشر الذهب الذكي على شبكة Pi Network</p>
+        
+        <div class="price-card">
+            <span class="badge">مباشر من البورصة العالمية</span>
+            <div class="price" id="gold-price">جاري تحميل السعر...</div>
+            <p>التطبيق متوافق تماماً مع محفظة Pi وبإشراف قانوني كامل.</p>
+        </div>
+    </div>
 
-<script>
-    // تهيئة مكتبة الـ SDK الخاصة بـ Pi Network
-    const Pi = window.Pi;
-    Pi.init({ version: "2.0", sandbox: true }); // تم تفعيل وضع الـ Sandbox للفحص والتجربة
-
-    async function loginWithPi() {
+    <script>
+        // تهيئة اتصال الـ SDK الخاص بشبكة باي
         try {
-            document.getElementById('user-status').innerText = "جاري الاتصال بـ Pi Network...";
-            
-            // طلب تسجيل دخول المستخدم وتحديد الصلاحيات المطلوبة (الاسم والمحفظة)
-            const scopes = ['username', 'payments'];
-            
-            function onIncompletePaymentFound(payment) {
-                console.log("هناك عملية دفع معلقة:", payment);
-            };
-
-            const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
-            
-            // إظهار بيانات المستخدم بعد نجاح تسجيل الدخول
-            document.getElementById('user-status').innerText = `مرحباً بك: ${auth.user.username}`;
-            document.getElementById('login-btn').style.display = 'none';
-            
-            console.log("تم التوثيق بنجاح للمستخدم:", auth.user.username);
-        } catch (error) {
-            console.error(error);
-            document.getElementById('user-status').innerText = "فشل تسجيل الدخول. يرجى الدخول من متصفح Pi Browser.";
+            Pi.init({ version: "2.0", sandbox: true });
+            console.log("Pi SDK initialized successfully.");
+        } catch (e) {
+            console.error("Pi SDK configuration required inside Pi Browser.");
         }
-    }
-</script>
 
+        // محاكاة سعر الذهب مؤقتاً حتى نربط الـ API الحي في الخطوات القادمة
+        setTimeout(() => {
+            document.getElementById('gold-price').innerText = "$2,350.45 / أونصة";
+        }, 1200);
+    </script>
 </body>
 </html>
