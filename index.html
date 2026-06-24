@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bullion Pi - منصة الذهب الرقمية</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <script>Pi.init({ version: "2.0", sandbox: true });</script>
     <style>
         body {
             margin: 0;
@@ -82,5 +83,21 @@
             document.getElementById('gold-price').innerText = "$2,350.45 / أونصة";
         }, 1200);
     </script>
+    <script>
+    const scopes = ['username', 'payments'];
+
+    function onIncompletePaymentFound(payment) {
+        // هنا يتم معالجة المدفوعات المعلقة إذا وجدت
+        console.log("Found incomplete payment:", payment);
+    }
+
+    // بدء عملية التحقق وتسجيل الدخول
+    Pi.authenticate(scopes, onIncompletePaymentFound).then(function(auth) {
+        console.log("تم تسجيل الدخول بنجاح للمستخدم: " + auth.user.username);
+        alert("مرحباً بك في Bullion Pi: " + auth.user.username);
+    }).catch(function(error) {
+        console.error("خطأ في تسجيل الدخول:", error);
+    });
+</script>
 </body>
 </html>
