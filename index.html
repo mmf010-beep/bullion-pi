@@ -156,14 +156,87 @@
         });
     };
 
-    payBtn.onclick = function () {
-      if (!currentUser) {
-        status("سجل الدخول أولاً.");
-        return;
-      }
+   const BACKEND_URL = "https://bullion-pi.onrender.com";
 
-      status("زر الدفع يعمل. الربط الحقيقي بالدفع يحتاج Backend في المرحلة التالية.");
-    };
+payBtn.onclick = function () {
+  if (!currentUser) {
+    status("سجل الدخول أولاً.");
+    return;
+  }
+
+  status("جاري فتح نافذة الدفع عبر Pi...");
+  payBtn.disabled = true;
+
+  Pi.createPayment({
+    amount: 0.01,
+    memo: "Bullion Pi test payment",
+    metadata: {
+      app: "Bullion Pi",
+      user: currentUser.username,
+      type: "test-clearing"
+    }
+  }, {
+    onReadyForServerApproval: function(paymentId) {
+      fetch(BACKEND_URL + "/approve", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ paymentId: paymentId })
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        console.log("Approval:", data);
+        status("تم اعتماد طلب الدفع من الخادم. أكمل الدفع في نافذة Pi.");
+      })
+      .catch(function(error) {
+        console.error(error);
+        status("فشل اعتماد الدفع من الخادم.");
+        payBtn.disabled = false;
+      });
+    },
+
+    onReadyForServerCompletion: function(paymentId, txid) {
+      fetch(BACKEND_URL + "/complete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          paymentId: paymentId,
+          txid: txid
+        })
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        console.log("Completion:", data);
+        status("تم إكمال الدفع بنجاح.");
+        payBtn.disabled = false;
+      })
+      .catch(function(error) {
+        console.error(error);
+        status("فشل إكمال الدفع.");
+        payBtn.disabled = false;
+      });
+    },
+
+    onCancel: function(paymentId) {
+      console.log("Payment cancelled:", paymentId);
+      status("تم إلغاء الدفع.");
+      payBtn.disabled = false;
+    },
+
+    onError: function(error, payment) {
+      console.error("Payment error:", error, payment);
+      status("حدث خطأ أثناء عملية الدفع.");
+      payBtn.disabled = false;
+    }
+  });
+};
   </script>
 </body>
 </html>
