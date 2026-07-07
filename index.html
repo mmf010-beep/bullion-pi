@@ -1,100 +1,169 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bullion Pi - منصة الذهب الرقمية</title>
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <script>Pi.init({ version: "2.0", sandbox: true });</script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #111111;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-        }
-        .container {
-            padding: 50px 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #D4AF37; /* لون الذهب الفخم */
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #aaaaaa;
-            font-size: 1.2rem;
-            line-height: 1.6;
-        }
-        .price-card {
-            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-            border: 2px solid #D4AF37;
-            border-radius: 15px;
-            display: inline-block;
-            padding: 30px;
-            margin-top: 30px;
-            width: 90%;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
-        }
-        .price {
-            font-size: 2.2rem;
-            color: #D4AF37;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-        .badge {
-            background-color: #D4AF37;
-            color: #111;
-            padding: 6px 18px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bullion Pi</title>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: Tahoma, Arial, sans-serif;
+      text-align: center;
+    }
+    .container {
+      max-width: 650px;
+      margin: auto;
+      padding: 45px 20px;
+    }
+    h1 {
+      color: #D4AF37;
+      font-size: 46px;
+    }
+    p {
+      color: #aaa;
+      font-size: 20px;
+      line-height: 1.7;
+    }
+    .card {
+      margin-top: 35px;
+      padding: 28px;
+      border: 2px solid #D4AF37;
+      border-radius: 18px;
+      background: #222;
+    }
+    .badge {
+      display: inline-block;
+      background: #D4AF37;
+      color: #111;
+      padding: 8px 22px;
+      border-radius: 25px;
+      font-weight: bold;
+    }
+    .price {
+      margin: 22px 0;
+      color: #D4AF37;
+      font-size: 36px;
+      font-weight: bold;
+      direction: ltr;
+    }
+    button {
+      margin-top: 15px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 10px;
+      background: #D4AF37;
+      color: #111;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #pay-btn {
+      display: none;
+    }
+    #status {
+      margin-top: 18px;
+      color: #ddd;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+  </style>
 </head>
-<div class="container">
-        <h1>Bullion Pi</h1>
-        <p>المقاصة الرقمية ومؤشر الذهب الذكي على شبكة Pi Network</p>
 
-        <h3 id="user-welcome" style="color: #D4AF37; margin-top: 20px;"></h3>
+<body>
+  <div class="container">
+    <h1>Bullion Pi</h1>
+    <p>المقاصة الرقمية ومؤشر الذهب الذكي على شبكة Pi Network</p>
 
-        <div class="price-card">
-            <span class="badge">مباشر من البورصة العالمية</span>
-            <div class="price" id="gold-price">جاري تحميل السعر...</div>
-            <p>التطبيق متوافق تماماً مع محفظة Pi وبإشراف قانوني كامل.</p>
+    <h3 id="user-welcome" style="color:#D4AF37;"></h3>
 
-            <button id="pay-btn" style="background-color: #D4AF37; color: #111; border: none; padding: 12px 30px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 15px; display: none;">
-                طلب مقاصة / دفع بواسطة Pi
-            </button>
-        </div>
+    <div class="card">
+      <span class="badge">مباشر من البورصة العالمية</span>
+      <div class="price" id="gold-price">جاري تحميل السعر...</div>
+
+      <p>نسخة اختبارية للتسجيل والتفاعل داخل Pi Browser.</p>
+
+      <button id="login-btn">تسجيل الدخول بواسطة Pi</button>
+      <button id="pay-btn">طلب مقاصة / دفع بواسطة Pi</button>
+
+      <div id="status">افتح التطبيق من داخل Pi Browser ثم اضغط تسجيل الدخول.</div>
     </div>
+  </div>
 
-    
+  <script>
+    const loginBtn = document.getElementById("login-btn");
+    const payBtn = document.getElementById("pay-btn");
+    const statusBox = document.getElementById("status");
+    const welcome = document.getElementById("user-welcome");
+    const goldPrice = document.getElementById("gold-price");
 
-    <script>
-        // تهيئة اتصال الـ SDK الخاص بشبكة باي
-       // محاكاة سعر الذهب مؤقتاً حتى نربط الـ API الحي في الخطوات القادمة
-    setTimeout(() => {
-        document.getElementById('gold-price').innerText = "$2,350.45 / أونصة";
-    }, 1200);
+    let currentUser = null;
 
-    const scopes = ['username', 'payments'];
-
-    function onIncompletePaymentFound(payment) {
-        console.log("Found incomplete payment:", payment);
+    function status(message) {
+      statusBox.innerText = message;
     }
 
-    Pi.authenticate(scopes, onIncompletePaymentFound).then(function(auth) {
-        console.log("تم تسجيل الدخول بنجاح للمستخدم: " + auth.user.username);
-        document.getElementById("user-welcome").innerText = "مرحباً بك: " + auth.user.username;
-        document.getElementById("pay-btn").style.display = "inline-block";
-    }).catch(function(error) {
-        console.error("خطأ في تسجيل الدخول:", error);
-    });
-</script>
+    setTimeout(function () {
+      goldPrice.innerText = "$2,350.45 / أونصة";
+    }, 700);
+
+    function onIncompletePaymentFound(payment) {
+      console.log("Incomplete payment:", payment);
+      status("تم العثور على عملية دفع غير مكتملة.");
+    }
+
+    window.onload = function () {
+      if (!window.Pi) {
+        status("Pi SDK غير متاح. افتح التطبيق من داخل Pi Browser.");
+        return;
+      }
+
+      try {
+        Pi.init({
+          version: "2.0",
+          sandbox: true
+        });
+        status("جاهز للتسجيل عبر Pi.");
+      } catch (error) {
+        console.error(error);
+        status("حدث خطأ أثناء تهيئة Pi SDK.");
+      }
+    };
+
+    loginBtn.onclick = function () {
+      if (!window.Pi) {
+        status("افتح التطبيق من داخل Pi Browser أولاً.");
+        return;
+      }
+
+      status("جاري تسجيل الدخول...");
+      loginBtn.disabled = true;
+
+      Pi.authenticate(["username", "payments"], onIncompletePaymentFound)
+        .then(function (auth) {
+          currentUser = auth.user;
+          welcome.innerText = "مرحباً بك: " + currentUser.username;
+          loginBtn.style.display = "none";
+          payBtn.style.display = "inline-block";
+          status("تم تسجيل الدخول بنجاح.");
+        })
+        .catch(function (error) {
+          console.error(error);
+          loginBtn.disabled = false;
+          status("تعذر تسجيل الدخول. تأكد أنك داخل Pi Browser وأن التطبيق في وضع الاختبار.");
+        });
+    };
+
+    payBtn.onclick = function () {
+      if (!currentUser) {
+        status("سجل الدخول أولاً.");
+        return;
+      }
+
+      status("زر الدفع يعمل. الربط الحقيقي بالدفع يحتاج Backend في المرحلة التالية.");
+    };
+  </script>
 </body>
 </html>
